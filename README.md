@@ -9,7 +9,7 @@ The code vector_sum2.c defines how each vector piece will be generated in each p
 
 In both previous codes the root process does not computes any partial sum and therefore it makes one node unavailable to speed up the calculations.
 
-In the code vector_sum3.c it is used MPI_Reduce() to compute the total sum. Therefore, the code became simpler and faster.
+In the code vector_sum3.c all processes (including the root) performs the calculations. It is used MPI_Reduce() to compute the total sum. Therefore, the code became simpler and faster.
 
 Compile as: mpicc -o vector_sum vector_sum3.c -lm
 Run as: time mpirun -n x vector_sum
