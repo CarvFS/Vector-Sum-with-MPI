@@ -2,7 +2,7 @@
 Based on the code presented at http://condor.cc.ku.edu/~grobe/docs/intro-MPI-C.shtml
 
 Code which calculate the sum of a vector using parallel computation.
-In case of main vector does not split equally to all processes, the leftover is passed to process id 1.
+In case of main vector does not split equally to all processes, the leftover is passed to process id 0.
 Process id 0 is the root process. However, it will also perform part of calculations.
 
 Each process will generate and calculate the partial sum of the vector values. It will be used MPI_Reduce() to calculate the total sum.
@@ -21,12 +21,12 @@ Acknowledgements: I would like to thanks Gilles Gouaillardet (https://stackoverf
 #include<math.h>
 
 #define vec_len 100000000
-double vec2[vec_len];
+long double vec2[vec_len];
 
 int main(int argc, char* argv[]){
     // defining program variables
     int i;
-    double sum, partial_sum;
+    long double sum, partial_sum;
 
     // defining parallel step variables
     int my_id, num_proc, ierr, an_id, root_process;
@@ -45,27 +45,27 @@ int main(int argc, char* argv[]){
     rows_per_proc = floor(rows_per_proc); // getting the maximum integer possible.
     leftover = vec_size - num_proc*rows_per_proc; // counting the leftover.
 
-    if(my_id == 1){
-        num_2_gen = rows_per_proc + leftover; // if there is leftover, it is calculate in process 1
+    if(my_id == 0){
+        num_2_gen = rows_per_proc + leftover; // if there is leftover, it is calculate in process 0
         start_point = my_id*num_2_gen; // the corresponding position on the main vector
     }
     else{
         num_2_gen = rows_per_proc;
-        start_point = my_id*num_2_gen; // the corresponding position on the main vector
+        start_point = my_id*num_2_gen + leftover; // the corresponding position on the main vector
     }
 
     partial_sum = 0;
     for(i = start_point; i < start_point + num_2_gen; i++){
-        vec2[i] = pow(i,2)+1.0; // defining vector values
+        vec2[i] = pow(i,2) + 1.0; // defining vector values
         partial_sum += vec2[i]; // calculating partial sum
     }
 
-    printf("Partial sum of process id %d: %f.\n", my_id, partial_sum);
+    printf("Partial sum of process id %d: %Lf.\n", my_id, partial_sum);
 
-    MPI_Reduce(&partial_sum, &sum, 1, MPI_DOUBLE, MPI_SUM, root_process, MPI_COMM_WORLD); // calculating total sum
+    MPI_Reduce(&partial_sum, &sum, 1, MPI_LONG_DOUBLE, MPI_SUM, root_process, MPI_COMM_WORLD); // calculating total sum
 
     if(my_id == root_process){
-        printf("Total sum is %f\n", sum);
+        printf("Total sum is %Lf.\n", sum);
     }
 
     ierr = MPI_Finalize();
