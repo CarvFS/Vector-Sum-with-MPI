@@ -8,7 +8,7 @@ Process id 0 is the root process. Therefore it does not count while passing info
 Each process will generate and calculate the partial sum of the vector values and send it back to the root process, which will calculate the total sum.
 Since the processes are independent, the printing order will be different at each run.
 
-compile as: mpicc -o vector_sum vector_send.c -lm
+compile as: mpicc -o vector_sum vector_sum2.c -lm
 run as: time mpirun -n x vector_sum
 
 x = number of splits desired + root process. For example: if * = 3, the vector will be splited in two.
