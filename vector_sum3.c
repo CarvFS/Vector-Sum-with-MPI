@@ -29,10 +29,10 @@ int main(int argc, char* argv[]){
     double sum, partial_sum;
 
     // defining parallel step variables
-    int my_id, num_proc, ierr, an_id, root_process; // id of process and total number of processes
+    int my_id, num_proc, ierr, an_id, root_process;
     int vec_size, rows_per_proc, leftover, num_2_gen, start_point;
 
-    vec_size = 1e8;
+    vec_size = 1e8; // defining the main vector size
     
     ierr = MPI_Init(&argc, &argv);
 
@@ -41,28 +41,28 @@ int main(int argc, char* argv[]){
     ierr = MPI_Comm_size(MPI_COMM_WORLD, &num_proc);
     ierr = MPI_Comm_rank(MPI_COMM_WORLD, &my_id);
 
-    rows_per_proc = vec_size/num_proc;
+    rows_per_proc = vec_size/num_proc; // getting the number of elements for each process.
     rows_per_proc = floor(rows_per_proc); // getting the maximum integer possible.
     leftover = vec_size - num_proc*rows_per_proc; // counting the leftover.
 
     if(my_id == 1){
-        num_2_gen = rows_per_proc + leftover;
-        start_point = my_id*num_2_gen;
+        num_2_gen = rows_per_proc + leftover; // if there is leftover, it is calculate in process 1
+        start_point = my_id*num_2_gen; // the corresponding position on the main vector
     }
     else{
         num_2_gen = rows_per_proc;
-        start_point = my_id*num_2_gen;
+        start_point = my_id*num_2_gen; // the corresponding position on the main vector
     }
 
     partial_sum = 0;
     for(i = start_point; i < start_point + num_2_gen; i++){
-        vec2[i] = pow(i,2)+1.0;
-        partial_sum += vec2[i];
+        vec2[i] = pow(i,2)+1.0; // defining vector values
+        partial_sum += vec2[i]; // calculating partial sum
     }
 
     printf("Partial sum of process id %d: %f.\n", my_id, partial_sum);
 
-    MPI_Reduce(&partial_sum, &sum, 1, MPI_DOUBLE, MPI_SUM, root_process, MPI_COMM_WORLD);
+    MPI_Reduce(&partial_sum, &sum, 1, MPI_DOUBLE, MPI_SUM, root_process, MPI_COMM_WORLD); // calculating total sum
 
     if(my_id == root_process){
         printf("Total sum is %f\n", sum);
