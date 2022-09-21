@@ -11,7 +11,7 @@ Since the processes are independent, the printing order will be different at eac
 compile as: mpicc -o vector_sum vector_sum.c -lm
 run as: time mpirun -n x vector_sum
 
-x = number of splits desired + root process. For example: if * = 3, the vector will be splited in two.
+x = number of splits desired + root process. For example: if x = 3, the vector will be splited in two.
 
 Acknowledgements: I would like to thanks Gilles Gouaillardet (https://stackoverflow.com/users/8062491/gilles-gouaillardet) for the helpful suggestion.
 */
